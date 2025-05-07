@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -58,14 +56,21 @@ public class TaskController {
   //                            |     Variavel do path    |
   //http://localhost:8080/tasks/892347823-oowkapt-897456123
   @PutMapping("/{id}")
-  public TaskModel update(@RequestBody TaskModel taskModel, @PathVariable  UUID id, HttpServletRequest request){
-    var idUser = request.getAttribute("idUser");
-
+  public ResponseEntity update(@RequestBody TaskModel taskModel, @PathVariable  UUID id, HttpServletRequest request){
     var task = this.taskRespository.findById(id).orElse(null);
+   
+    if (task == null)
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tarefa não encontrada");
+
+    var idUser = request.getAttribute("idUser");
+    
+    if (!(idUser.equals(task.getIdUser()))) 
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Permissão não concedida");
+    
 
     Utils.copyNonNullProperties(taskModel, task);
-
-    return this.taskRespository.save(task);
+    var uptadedTask = this.taskRespository.save(task);
+    return ResponseEntity.status(HttpStatus.OK).body(uptadedTask);
   }
 
   
