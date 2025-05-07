@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -46,6 +49,16 @@ public class TaskController {
     var tasks = this.taskRespository.findByIdUser((UUID)idUser);
 
     return tasks;
+  }
+
+  //                            |     Variavel do path    |
+  //http://localhost:8080/tasks/892347823-oowkapt-897456123
+  @PutMapping("/{id}")
+  public TaskModel update(@RequestBody TaskModel taskModel, @PathVariable  UUID id, HttpServletRequest request){
+    var idUser = request.getAttribute("idUser");
+    taskModel.setIdUser((UUID) idUser);
+    taskModel.setId(id);
+    return this.taskRespository.save(taskModel);
   }
   
 }
