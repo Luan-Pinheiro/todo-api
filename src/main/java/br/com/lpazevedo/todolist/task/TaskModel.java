@@ -24,11 +24,17 @@ public class TaskModel {
   private LocalDateTime startAt;
   private LocalDateTime endtAt;
   private String priority;
+  private UUID idUser;
 
   @CreationTimestamp
   private LocalDateTime createdAt; //db tem a infromacao do instante de criacao do dado
 
-  private UUID idUser;
+  public void setTitle(String title) throws Exception{
+    if(title.length() > 50){
+      throw new Exception("O título deve contar até 50 caracteres");
+    }
+    this.title = title;
+  }
 
   
 }
